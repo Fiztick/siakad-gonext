@@ -78,6 +78,6 @@ func (h *Handler) generateToken(userID uint, employeeID uint, perms []string) (s
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }

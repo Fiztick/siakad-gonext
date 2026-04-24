@@ -41,6 +41,8 @@ func InitDB() *gorm.DB {
 		log.Fatalf("Could not connect to database after %d retries: %v", attempt, err)
 	}
 
+	fmt.Println("Database Connected")
+
 	fmt.Println("Running Database Migrations...")
 	err = db.AutoMigrate(
 		&model.Permission{},
@@ -60,6 +62,6 @@ func InitDB() *gorm.DB {
 		log.Fatal("Migration Failed: ", err)
 	}
 
-	fmt.Println("Database Connected & Migrated Successfully")
+	fmt.Println("Database Schema is Up To Date")
 	return db
 }
