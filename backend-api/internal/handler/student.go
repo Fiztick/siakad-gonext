@@ -17,7 +17,7 @@ func (h *Handler) GetStudents(c *echo.Context) error {
 		db = db.Where("name ILIKE ?", "%"+name+"%")
 	}
 
-	//filter by query
+	//filter by class
 	if classID := c.QueryParam("class_Id"); classID != "" {
 		db = db.Where("class_id = ?", classID)
 	}
@@ -28,8 +28,8 @@ func (h *Handler) GetStudents(c *echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
-		"message": len(students),
-		"data":    students,
+		"count": len(students),
+		"data":  students,
 	})
 }
 
@@ -41,10 +41,7 @@ func (h *Handler) GetStudent(c *echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"message": "Student retrieved successfully",
-		"data":    student,
-	})
+	return c.JSON(http.StatusOK, student)
 }
 
 func (h *Handler) CreateStudent(c *echo.Context) error {
@@ -58,10 +55,7 @@ func (h *Handler) CreateStudent(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, map[string]any{
-		"message": "Student created successfully",
-		"data":    student,
-	})
+	return c.JSON(http.StatusCreated, student)
 }
 
 func (h *Handler) UpdateStudent(c *echo.Context) error {
@@ -80,10 +74,7 @@ func (h *Handler) UpdateStudent(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"message": "Student updated successfully",
-		"data":    student,
-	})
+	return c.JSON(http.StatusOK, student)
 }
 
 func (h *Handler) DeleteStudent(c *echo.Context) error {

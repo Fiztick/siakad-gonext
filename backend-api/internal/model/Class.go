@@ -4,11 +4,11 @@ import "gorm.io/gorm"
 
 type Class struct {
 	gorm.Model
-	Name   string
-	YearID uint
-	Year   Year
+	ClassCode string `gorm:"uniqueIndex"`
+	Name      string
+	YearID    uint `json:"year_id"`
+	Year      Year `json:"year"`
 
-	ClassCode         string `gorm:"uniqueIndex"`
-	HomeroomTeacherID uint
-	HomeroomTeacher   Employee `gorm:"foreignKey:HomeroomTeacherID"`
+	HomeroomTeacherID uint     `json:"homeroom_teacher_id"`
+	HomeroomTeacher   Employee `gorm:"foreignKey:HomeroomTeacherID" json:"homeroom_teacher"`
 }
