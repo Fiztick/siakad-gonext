@@ -10,5 +10,8 @@ type Attendance struct {
 	TotalSakit int
 
 	StudentID uint `gorm:"not null"`
-	ClassID   uint `gorm:"not null"`
+	Student   Student
+
+	ClassID uint `gorm:"not null"`
+	Class   Class
 }

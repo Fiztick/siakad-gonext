@@ -98,6 +98,10 @@ func main() {
 	protected.GET("/grades/class-view", h.GetGradeByClassCourse)
 	protected.GET("/student/:studentId/report-card", h.GetStudentReportCard)
 
+	protected.POST("/attendance", h.UpsertAttendance)
+	protected.GET("/attendance/class", h.GetAttendanceByClass)
+	protected.GET("/student/:studentId/attendance", h.GetStudentAttendance)
+
 	if err := e.Start(":8080"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
 	}

@@ -5,16 +5,13 @@ import (
 	"siakad-backend/internal/model"
 
 	"github.com/labstack/echo/v5"
-	"gorm.io/gorm"
 )
 
 func (h *Handler) GetClassStudents(c *echo.Context) error {
 	classId := c.Param("classId")
 	var members []model.ClassStudent
 
-	if err := h.DB.Preload("Student", func(db *gorm.DB) *gorm.DB {
-		return db.Select("id", "nisn", "name")
-	}).Where("class_id = ?", classId).Find(&members).Error; err != nil {
+	if err := h.DB.Preload("Student").Where("class_id = ?", classId).Find(&members).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
