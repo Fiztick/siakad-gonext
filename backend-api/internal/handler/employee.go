@@ -106,6 +106,8 @@ func (h *Handler) CreateEmployee(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
+	h.DB.Preload("Position").First(&emp, emp.ID)
+
 	return c.JSON(http.StatusCreated, emp)
 }
 
@@ -180,6 +182,8 @@ func (h *Handler) UpdateEmployee(c *echo.Context) error {
 	if err := h.DB.Save(&emp).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
+
+	h.DB.Preload("Position").First(&emp, emp.ID)
 
 	return c.JSON(http.StatusOK, emp)
 }

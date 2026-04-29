@@ -49,12 +49,12 @@ func (h *Handler) UpdateCourse(c *echo.Context) error {
 	id := c.Param("courseId")
 	var course model.Course
 
-	if err := c.Bind(&course); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
-	}
-
 	if err := h.DB.Find(&course, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "Course not found"})
+	}
+
+	if err := c.Bind(&course); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
 	}
 
 	if err := h.DB.Save(&course).Error; err != nil {

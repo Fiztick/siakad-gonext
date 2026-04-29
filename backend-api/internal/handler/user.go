@@ -5,6 +5,7 @@ import (
 	"siakad-backend/internal/model"
 
 	"github.com/labstack/echo/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (h *Handler) GetUsers(c *echo.Context) error {
@@ -41,8 +42,21 @@ func (h *Handler) CreateUser(c *echo.Context) error {
 
 	// check if employee exist
 	if err := h.DB.First(&employee, user.EmployeeID).Error; err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"messsage": "Employee not found"})
+		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Employee not found"})
 	}
+
+	// check if employee already have an account
+	var count int64
+	h.DB.Model(model.User{}).Where("employee_id = ?", user.EmployeeID).Count(&count)
+	if count > 0 {
+		return c.JSON(http.StatusConflict, map[string]string{"message": "This employee already have an account"})
+	}
+
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to hash password"})
+	}
+	user.Password = string(hashedPass)
 
 	if err := h.DB.Create(&user).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})

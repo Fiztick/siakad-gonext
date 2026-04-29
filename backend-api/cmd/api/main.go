@@ -68,7 +68,7 @@ func main() {
 
 	protected.GET("/employees", h.GetEmployees)
 	protected.POST("/employee", h.CreateEmployee)
-	protected.GET("/employees/:employeeId", h.GetEmployee)
+	protected.GET("/employee/:employeeId", h.GetEmployee)
 	protected.PUT("/employee/:employeeId", h.UpdateEmployee)
 	protected.DELETE("/employee/:employeeId", h.DeleteEmployee)
 

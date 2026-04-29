@@ -20,14 +20,15 @@ func (h *Handler) GetPermissions(c *echo.Context) error {
 	})
 }
 
+// echo binding bug saat syncpermission
+var input struct {
+	PermissionIDs []uint `json:"permission_ids"`
+}
+
 func (h *Handler) SyncUserPermissions(c *echo.Context) error {
 	userId := c.Param("userId")
 	var user model.User
 	var perms []model.Permission
-
-	var input struct {
-		PermissionIDs []uint `json:"permission_ids"`
-	}
 
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
@@ -36,6 +37,12 @@ func (h *Handler) SyncUserPermissions(c *echo.Context) error {
 	// check if user exist
 	if err := h.DB.First(&user, userId).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found"})
+	}
+
+	// check if permission ids is null return clearing all permission
+	if len(input.PermissionIDs) == 0 {
+		h.DB.Model(&user).Association("Permissions").Clear()
+		return c.JSON(http.StatusOK, map[string]string{"message": "Permissions cleared"})
 	}
 
 	// get all perms

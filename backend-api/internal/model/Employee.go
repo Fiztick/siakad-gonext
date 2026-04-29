@@ -21,6 +21,6 @@ type Employee struct {
 	LastPlaceOfEducation string
 	Image                string
 
-	PositionID uint
+	PositionID uint `json:"position_id"`
 	Position   Position
 }

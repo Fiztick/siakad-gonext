@@ -15,8 +15,8 @@ func (h *Handler) GetPositions(c *echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
-		"message": len(positions),
-		"data":    positions,
+		"count": len(positions),
+		"data":  positions,
 	})
 }
 
