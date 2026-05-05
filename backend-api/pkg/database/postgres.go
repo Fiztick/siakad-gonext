@@ -53,6 +53,7 @@ func InitDB() *gorm.DB {
 		&model.Student{},
 		&model.Guardian{},
 		&model.Class{},
+		&model.ClassStudent{},
 		&model.Course{},
 		&model.CourseGrade{},
 		&model.Attendance{},

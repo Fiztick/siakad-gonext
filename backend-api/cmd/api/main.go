@@ -51,6 +51,11 @@ func main() {
 	protected.GET("/permissions", h.GetPermissions)
 	protected.PUT("/user/:userId/permissions", h.SyncUserPermissions)
 
+	// Student's Enrollments
+	protected.GET("/class/:classId/students", h.GetClassStudents)
+	protected.POST("/enrollment", h.EnrollStudent)
+	protected.DELETE("/enrollment/:enrollmentId", h.DeleteEnrollment)
+
 	protected.GET("/students", h.GetStudents)
 	protected.POST("/student", h.CreateStudent)
 	protected.GET("/student/:studentId", h.GetStudent)
@@ -83,10 +88,6 @@ func main() {
 	protected.GET("/class/:classId", h.GetClass)
 	protected.PUT("/class/:classId", h.UpdateClass)
 	protected.DELETE("/class/:classId", h.DeleteClass)
-
-	protected.GET("/class/:classId/students", h.GetClassStudents)
-	protected.GET("/enrollment", h.EnrollStudent)
-	protected.DELETE("/enrollment/:enrollmentId", h.DeleteEnrollment)
 
 	protected.GET("/courses", h.GetCourses)
 	protected.POST("/course", h.CreateCourse)

@@ -31,9 +31,6 @@ type Student struct {
 	IqraReadingVolume string `json:"iqra_reading_volume"`
 	Status            string `gorm:"default:'Active'"`
 
-	ClassID *uint `json:"class_id"`
-	Class   Class `json:"class" gorm:"foreignKey:ClassID"`
-
 	Guardian    Guardian
 	Attendances []Attendance
 	Grades      []CourseGrade

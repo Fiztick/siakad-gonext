@@ -9,13 +9,24 @@ import (
 
 func (h *Handler) GetClassStudents(c *echo.Context) error {
 	classId := c.Param("classId")
+	var class model.Class
 	var members []model.ClassStudent
 
-	if err := h.DB.Preload("Student").Where("class_id = ?", classId).Find(&members).Error; err != nil {
+	if err := h.DB.First(&class, classId).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "Class not found"})
+	}
+
+	if err := h.DB.Preload("Student").Preload("Student.Guardian").Preload("Class.Year").Preload("Class.HomeroomTeacher.Position").Where("class_id = ?", classId).Find(&members).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, members)
+	h.DB.Preload("Year").Preload("HomeroomTeacher.Position").First(&class, class.ID)
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"class":         class,
+		"student_total": len(members),
+		"members":       members,
+	})
 }
 
 func (h *Handler) EnrollStudent(c *echo.Context) error {
@@ -47,6 +58,8 @@ func (h *Handler) EnrollStudent(c *echo.Context) error {
 	if err := h.DB.Create(&enrollment).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
+
+	h.DB.Preload("Class").Preload("Student").Preload("Student.Guardian").First(&enrollment, enrollment.ID)
 
 	return c.JSON(http.StatusCreated, enrollment)
 }

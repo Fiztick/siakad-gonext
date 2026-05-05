@@ -65,12 +65,12 @@ func (h *Handler) UpdateClass(c *echo.Context) error {
 	var year model.Year
 	var ht model.Employee
 
-	if err := c.Bind(&class); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
+	if err := h.DB.First(&class, id).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "Class not found"})
 	}
 
-	if err := h.DB.Find(&class, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"message": "Class not found"})
+	if err := c.Bind(&class); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
 	}
 
 	// check if year exist
@@ -86,6 +86,8 @@ func (h *Handler) UpdateClass(c *echo.Context) error {
 	if err := h.DB.Save(&class).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
+
+	h.DB.Preload("Year").Preload("HomeroomTeacher").Preload("HomeroomTeacher.Position").First(&class, class.ID)
 
 	return c.JSON(http.StatusOK, class)
 }

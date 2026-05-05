@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) GetStudents(c *echo.Context) error {
 	var students []model.Student
-	db := h.DB.Preload("Class").Preload("Guardian").Preload("Attendances").Preload("Grades")
+	db := h.DB.Preload("Guardian").Preload("Attendances").Preload("Grades")
 
 	// filter by name
 	if name := c.QueryParam("name"); name != "" {
@@ -37,7 +37,7 @@ func (h *Handler) GetStudent(c *echo.Context) error {
 	id := c.Param("studentId")
 	var student model.Student
 
-	if err := h.DB.Preload("Guardian").Preload("Class").First(&student, id).Error; err != nil {
+	if err := h.DB.Preload("Guardian").First(&student, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
 	}
 
@@ -74,7 +74,7 @@ func (h *Handler) UpdateStudent(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
-	h.DB.Preload("Guardian").Preload("Attendances").Preload("Grades").Preload("Class").First(&student, student.ID)
+	h.DB.Preload("Guardian").Preload("Attendances").Preload("Grades").First(&student, student.ID)
 
 	return c.JSON(http.StatusOK, student)
 }

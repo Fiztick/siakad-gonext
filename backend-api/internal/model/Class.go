@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Class struct {
 	gorm.Model
-	ClassCode string `gorm:"uniqueIndex"`
+	ClassCode string `gorm:"uniqueIndex" json:"class_code"`
 	Name      string
 	YearID    uint `json:"year_id"`
 	Year      Year `json:"year"`
