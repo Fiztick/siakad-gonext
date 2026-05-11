@@ -96,7 +96,7 @@ func main() {
 	protected.DELETE("/course/:courseId", h.DeleteCourse)
 
 	protected.POST("/grade", h.UpsertCourseGrade)
-	protected.GET("/grades/class-view", h.GetGradeByClassCourse)
+	protected.GET("/grades/class", h.GetGradeByClassCourse)
 	protected.GET("/student/:studentId/report-card", h.GetStudentReportCard)
 
 	protected.POST("/attendance", h.UpsertAttendance)

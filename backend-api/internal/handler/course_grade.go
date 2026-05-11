@@ -39,46 +39,50 @@ func (h *Handler) GetStudentReportCard(c *echo.Context) error {
 }
 
 func (h *Handler) UpsertCourseGrade(c *echo.Context) error {
-	var grade model.CourseGrade
+	var input model.CourseGrade
 	var existingGrade model.CourseGrade
 
-	if err := c.Bind(&grade); err != nil {
+	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
 	}
 
 	// check student
-	var student model.Student
-	if err := h.DB.First(&student, grade.StudentID).Error; err != nil {
+	var studentCount int64
+	h.DB.Model(&model.Student{}).Where("id = ?", input.StudentID).Count(&studentCount)
+	if studentCount == 0 {
 		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Student not found"})
 	}
 
 	// check class
-	var class model.Class
-	if err := h.DB.First(&class, grade.ClassID).Error; err != nil {
+	var classCount int64
+	h.DB.Model(&model.Class{}).Where("id = ?", input.ClassID).Count(&classCount)
+	if classCount == 0 {
 		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Class not found"})
 	}
 
 	// check course
-	var course model.Course
-	if err := h.DB.First(&course, grade.CourseID).Error; err != nil {
+	var courseCount int64
+	h.DB.Model(&model.Course{}).Where("id = ?", input.CourseID).Count(&courseCount)
+	if courseCount == 0 {
 		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Course not found"})
 	}
 
 	// check employee
-	var employee model.Employee
-	if err := h.DB.First(&employee, grade.EmployeeID).Error; err != nil {
+	var employeeCount int64
+	h.DB.Model(&model.Employee{}).Where("id = ?", input.EmployeeID).Count(&employeeCount)
+	if employeeCount == 0 {
 		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Employee not found"})
 	}
 
 	// update if grade already exist
 	err := h.DB.Where("student_id = ? AND class_id = ? AND course_id = ?",
-		grade.StudentID, grade.ClassID, grade.CourseID).First(&existingGrade).Error
+		input.StudentID, input.ClassID, input.CourseID).First(&existingGrade).Error
 	if err == nil {
-		existingGrade.AverageDailyGrade = grade.AverageDailyGrade
-		existingGrade.FirstMidtermGrade = grade.FirstMidtermGrade
-		existingGrade.SecondMidtermGrade = grade.SecondMidtermGrade
-		existingGrade.FirstFinalGrade = grade.FirstFinalGrade
-		existingGrade.SecondFinalGrade = grade.SecondFinalGrade
+		existingGrade.AverageDailyGrade = input.AverageDailyGrade
+		existingGrade.FirstMidtermGrade = input.FirstMidtermGrade
+		existingGrade.SecondMidtermGrade = input.SecondMidtermGrade
+		existingGrade.FirstFinalGrade = input.FirstFinalGrade
+		existingGrade.SecondFinalGrade = input.SecondFinalGrade
 		if err := h.DB.Save(&existingGrade).Error; err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 		}
@@ -88,12 +92,12 @@ func (h *Handler) UpsertCourseGrade(c *echo.Context) error {
 		return c.JSON(http.StatusOK, existingGrade)
 	}
 
-	// create if grade dont exist
-	if err := h.DB.Create(&grade).Error; err != nil {
+	// create if input dont exist
+	if err := h.DB.Create(&input).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
-	h.DB.Preload("Student").Preload("Class").Preload("Course").First(&grade, grade.ID)
+	h.DB.Preload("Student").Preload("Class").Preload("Course").First(&input, input.ID)
 
-	return c.JSON(http.StatusCreated, grade)
+	return c.JSON(http.StatusCreated, input)
 }

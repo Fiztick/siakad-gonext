@@ -33,16 +33,23 @@ func (h *Handler) GetStudentAttendance(c *echo.Context) error {
 func (h *Handler) UpsertAttendance(c *echo.Context) error {
 	var attendance model.Attendance
 	var input model.Attendance
+
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request format"})
 	}
 
-	var studentCount, classCount int64
+	// check student
+	var studentCount int64
 	h.DB.Model(&model.Student{}).Where("id = ?", input.StudentID).Count(&studentCount)
-	h.DB.Model(&model.Class{}).Where("id = ?", input.ClassID).Count(&classCount)
+	if studentCount == 0 {
+		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Student not found"})
+	}
 
-	if studentCount == 0 || classCount == 0 {
-		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Student or Class not found"})
+	// check class
+	var classCount int64
+	h.DB.Model(&model.Class{}).Where("id = ?", input.ClassID).Count(&classCount)
+	if classCount == 0 {
+		return c.JSON(http.StatusUnprocessableEntity, map[string]string{"message": "Class not found"})
 	}
 
 	// update if record already exist
